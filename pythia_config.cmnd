@@ -3,7 +3,7 @@
 
 
 ! 1) Settings used in the main program.
-Main:numberOfEvents = 10000000        ! number of events to generate
+Main:numberOfEvents = 1000000        ! number of events to generate
 Main:timesAllowErrors = 100        ! how many aborts before run stops
 
 

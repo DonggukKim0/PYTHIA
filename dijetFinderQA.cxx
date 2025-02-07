@@ -49,6 +49,7 @@ struct DijetFinderQATask {
   HistogramRegistry registry;
 
   Configurable<float> setJetPtCut{"setJetPtCut", 20, "set jet pt minimum cut"};
+  Configurable<float> phicut{"phicut", 0.5, "set phicut"};
   Configurable<float> selectedJetsRadius{"selectedJetsRadius", 0.4, "resolution parameter for histograms without radius"};
   Configurable<double> jetPtMax{"jetPtMax", 200., "set jet pT bin max"};
   Configurable<float> vertexZCut{"vertexZCut", 10.0f, "Accepted z-vertex range"};
@@ -227,18 +228,14 @@ struct DijetFinderQATask {
 
       for (size_t i = 1; i < jetPtcuts.size() && !found_pair; i++) {
         auto& candidate_jet = jetPtcuts[i];
-        Double_t dphi = fabs(candidate_jet[2] - leading_jet[2]);
-        if (dphi > M_PI) {
-          dphi = 2 * M_PI - dphi;
-        }
-        if (dphi > 2 * M_PI / 3) {
-          double pt1 = leading_jet[0];
-          double pt2 = candidate_jet[0];
-          double eta1 = leading_jet[1];
-          double eta2 = candidate_jet[1];
-          double phi1 = leading_jet[2];
-          double phi2 = candidate_jet[2];
-          double dijet_mass = sqrt(2 * pt1 * pt2 * (cosh(eta1 - eta2) - cos(phi1 - phi2)));
+        Double_t dphi = fabs(leading_jet[2] - candidate_jet[2]);
+        Double_t deta = fabs(leading_jet[1] - candidate_jet[1]);
+        Double_t condition = fabs(dphi - M_PI);
+
+        if (condition < phicut * M_PI) {
+          Double_t pt1 = leading_jet[0];
+          Double_t pt2 = candidate_jet[0];
+          Double_t dijet_mass = sqrt(2 * pt1 * pt2 * (cosh(deta) - cos(dphi)));
           fillMassHistogramsMCP(dijet_mass);
           found_pair = true;
         }
@@ -264,18 +261,14 @@ struct DijetFinderQATask {
 
       for (size_t i = 1; i < jetPtcuts.size() && !found_pair; i++) {
         auto& candidate_jet = jetPtcuts[i];
-        Double_t dphi = fabs(candidate_jet[2] - leading_jet[2]);
-        if (dphi > M_PI) {
-          dphi = 2 * M_PI - dphi;
-        }
-        if (dphi > 2 * M_PI / 3) {
-          double pt1 = leading_jet[0];
-          double pt2 = candidate_jet[0];
-          double eta1 = leading_jet[1];
-          double eta2 = candidate_jet[1];
-          double phi1 = leading_jet[2];
-          double phi2 = candidate_jet[2];
-          double dijet_mass = sqrt(2 * pt1 * pt2 * (cosh(eta1 - eta2) - cos(phi1 - phi2)));
+        Double_t dphi = fabs(leading_jet[2] - candidate_jet[2]);
+        Double_t deta = fabs(leading_jet[1] - candidate_jet[1]);
+        Double_t condition = fabs(dphi - M_PI);
+
+        if (condition < phicut * M_PI) {
+          Double_t pt1 = leading_jet[0];
+          Double_t pt2 = candidate_jet[0];
+          Double_t dijet_mass = sqrt(2 * pt1 * pt2 * (cosh(deta) - cos(dphi)));
           fillMassHistogramsMCD(dijet_mass);
           found_pair = true;
         }
@@ -302,18 +295,14 @@ struct DijetFinderQATask {
 
       for (size_t i = 1; i < jetPtcuts.size() && !found_pair; i++) {
         auto& candidate_jet = jetPtcuts[i];
-        Double_t dphi = fabs(candidate_jet[2] - leading_jet[2]);
-        if (dphi > M_PI) {
-          dphi = 2 * M_PI - dphi;
-        }
-        if (dphi > 2 * M_PI / 3) {
-          double pt1 = leading_jet[0];
-          double pt2 = candidate_jet[0];
-          double eta1 = leading_jet[1];
-          double eta2 = candidate_jet[1];
-          double phi1 = leading_jet[2];
-          double phi2 = candidate_jet[2];
-          double dijet_mass = sqrt(2 * pt1 * pt2 * (cosh(eta1 - eta2) - cos(phi1 - phi2)));
+        Double_t dphi = fabs(leading_jet[2] - candidate_jet[2]);
+        Double_t deta = fabs(leading_jet[1] - candidate_jet[1]);
+        Double_t condition = fabs(dphi - M_PI);
+
+        if (condition < phicut * M_PI) {
+          Double_t pt1 = leading_jet[0];
+          Double_t pt2 = candidate_jet[0];
+          Double_t dijet_mass = sqrt(2 * pt1 * pt2 * (cosh(deta) - cos(dphi)));
           fillMassHistogramsData(dijet_mass);
           found_pair = true;
         }
@@ -355,26 +344,20 @@ struct DijetFinderQATask {
         auto& candidate_jet_D = jetPtcuts_D[i];
         auto& candidate_jet_P = jetPtcuts_P[i];
 
-        Double_t dphi_D = fabs(candidate_jet_D[2] - leading_jet_D[2]);
-        if (dphi_D > M_PI) {
-          dphi_D = 2 * M_PI - dphi_D;
-        }
-        if (dphi_D > 2 * M_PI / 3) {
+        Double_t dphi_D = fabs(leading_jet_D[2] - candidate_jet_D[2]);
+        Double_t deta_D = fabs(leading_jet_D[1] - candidate_jet_D[1]);
+        Double_t dphi_P = fabs(leading_jet_P[2] - candidate_jet_P[2]);
+        Double_t deta_P = fabs(leading_jet_P[1] - candidate_jet_p[1]);
+        Double_t condition = fabs(dphi_D - M_PI);
+
+        if (condition < phicut * M_PI) {
           double pt1_D = leading_jet_D[0];
           double pt2_D = candidate_jet_D[0];
-          double eta1_D = leading_jet_D[1];
-          double eta2_D = candidate_jet_D[1];
-          double phi1_D = leading_jet_D[2];
-          double phi2_D = candidate_jet_D[2];
-          double dijet_mass_D = sqrt(2 * pt1_D * pt2_D * (cosh(eta1_D - eta2_D) - cos(phi1_D - phi2_D)));
+          double dijet_mass_D = sqrt(2 * pt1_D * pt2_D * (cosh(deta_D) - cos(dphi_D)));
 
           double pt1_P = leading_jet_P[0];
           double pt2_P = candidate_jet_P[0];
-          double eta1_P = leading_jet_P[1];
-          double eta2_P = candidate_jet_P[1];
-          double phi1_P = leading_jet_P[2];
-          double phi2_P = candidate_jet_P[2];
-          double dijet_mass_P = sqrt(2 * pt1_P * pt2_P * (cosh(eta1_P - eta2_P) - cos(phi1_P - phi2_P)));
+          double dijet_mass_P = sqrt(2 * pt1_P * pt2_P * (cosh(deta_P) - cos(dphi_P)));
 
           fillMassHistogramsMCMatched(dijet_mass_P, dijet_mass_D);
           found_pair = true;

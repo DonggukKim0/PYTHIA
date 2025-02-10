@@ -80,17 +80,17 @@ struct DijetFinderQATask {
     eventSelection = jetderiveddatautilities::initialiseEventSelection(static_cast<std::string>(eventSelections));
     trackSelection = jetderiveddatautilities::initialiseTrackSelection(static_cast<std::string>(trackSelections));
 
-    auto jetPtTemp = 0.0;
+    auto jetPtTemp = 5.0;
     jetPtBins.push_back(jetPtTemp);
     while (jetPtTemp < jetPtMax) {
-      if (jetPtTemp < 100.0) {
-        jetPtTemp += 1.0;
+      if (jetPtTemp < 85) {
+        jetPtTemp += 10.0;
         jetPtBins.push_back(jetPtTemp);
-      } else if (jetPtTemp < 200.0) {
-        jetPtTemp += 5.0;
+      } else if (jetPtTemp < 130.0) {
+        jetPtTemp += 15.0;
         jetPtBins.push_back(jetPtTemp);
       } else {
-        jetPtTemp += 10.0;
+        jetPtTemp += 20.0;
         jetPtBins.push_back(jetPtTemp);
       }
     }

@@ -12,7 +12,6 @@ USER_SCRIPT = ""
 POST_SCRIPT = ""
 
 ## Default values
-inputFiles=f"pythia_config.cmnd"
 totalEvents = 1000
 print(f"Total events: {totalEvents}")
 
@@ -29,9 +28,6 @@ pathlib.Path(f"{mainDir}/{workDir}/logs").mkdir(parents=True, exist_ok=True)
 
 for number in range(totalEvents):
     pathlib.Path(f"{mainDir}/{workDir}/out/{number}").mkdir(parents=True, exist_ok=True)
-
-# Copy input files
-shutil.copy(inputFiles, f"{mainDir}/{workDir}/macro/")
 
 
 # Make run.sh file (main macro)
@@ -66,7 +62,7 @@ Error                   = {workDir}/$(process).error
 
 request_memory          = 512MB
 request_disk            = 512MB
-transfer_input_files    = alienv_envset.sh,pythia,run.sh,{inputFiles}
+transfer_input_files    = alienv_envset.sh,pythia,pythia_config.cmnd,run.sh
 transfer_output_files   = AnalysisResults.root
 arguments               = "$(Opt) $(process)"
 should_transfer_files   = YES

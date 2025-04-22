@@ -48,72 +48,66 @@ struct DijetFinderQATask {
 
   HistogramRegistry registry;
 
-  Configurable<float> setJetPtCut{"setJetPtCut", 20, "set jet pt minimum cut"};
-  Configurable<float> phicut{"phicut", 0.5, "set phicut"};
-  Configurable<float> selectedJetsRadius{"selectedJetsRadius", 0.4, "resolution parameter for histograms without radius"};
-  Configurable<double> jetPtMax{"jetPtMax", 200., "set jet pT bin max"};
-  Configurable<float> vertexZCut{"vertexZCut", 10.0f, "Accepted z-vertex range"};
   Configurable<float> centralityMin{"centralityMin", -999.0, "minimum centrality"};
   Configurable<float> centralityMax{"centralityMax", 999.0, "maximum centrality"};
-  Configurable<float> jetAreaFractionMin{"jetAreaFractionMin", -99.0, "used to make a cut on the jet areas"};
-  Configurable<float> leadingConstituentPtMin{"leadingConstituentPtMin", -99.0, "minimum pT selection on jet constituent"};
-  Configurable<float> leadingConstituentPtMax{"leadingConstituentPtMax", 9999.0, "maximum pT selection on jet constituent"};
+  Configurable<std::string> eventSelections{"eventSelections", "sel8", "choose event selection"};
+  Configurable<float> vertexZCut{"vertexZCut", 10.0f, "Accepted z-vertex range"};
+  Configurable<std::string> trackSelections{"trackSelections", "globalTracks", "set track selections"};
   Configurable<float> trackPtMin{"trackPtMin", 0.15, "minimum pT acceptance for tracks"};
-  Configurable<float> trackPtMax{"trackPtMax", 100.0, "maximum pT acceptance for tracks"};
+  Configurable<float> trackPtMax{"trackPtMax", 1000.0, "maximum pT acceptance for tracks"};
   Configurable<float> trackEtaMin{"trackEtaMin", -0.9, "minimum eta acceptance for tracks"};
   Configurable<float> trackEtaMax{"trackEtaMax", 0.9, "maximum eta acceptance for tracks"};
+  Configurable<float> leadingConstituentPtMin{"leadingConstituentPtMin", -99.0, "minimum pT selection on jet constituent"};
+  Configurable<float> leadingConstituentPtMax{"leadingConstituentPtMax", 9999.0, "maximum pT selection on jet constituent"};
+  Configurable<float> setJetPtCut{"setJetPtCut", 20., "set jet pt minimum cut"};
+  Configurable<float> setPhiCut{"setPhiCut", 0.5, "set phicut"};
+  Configurable<float> jetR{"jetR", 0.4, "jet resolution parameter"};
+  Configurable<float> jetPtMin{"jetPtMin", 20.0, "minimum jet pT cut"};
+  Configurable<double> jetPtMax{"jetPtMax", 200., "set jet pT bin max"};
   Configurable<float> jetEtaMin{"jetEtaMin", -0.5, "minimum jet pseudorapidity"};
   Configurable<float> jetEtaMax{"jetEtaMax", 0.5, "maximum jet pseudorapidity"};
-  Configurable<float> jetPtMin{"jetPtMin", 20.0, "minimum jet pT cut"};
-  Configurable<float> jetR{"jetR", 0.4, "jet resolution parameter"};
-  Configurable<std::string> eventSelections{"eventSelections", "sel8", "choose event selection"};
-  Configurable<std::string> trackSelections{"trackSelections", "globalTracks", "set track selections"};
-  Configurable<bool> checkMcCollisionIsMatched{"checkMcCollisionIsMatched", false, "0: count whole MCcollisions, 1: select MCcollisions which only have their correspond collisions"};
+  Configurable<float> jetAreaFractionMin{"jetAreaFractionMin", -99.0, "used to make a cut on the jet areas"};
 
-  int eventSelection = -1;
+  std::vector<int> eventSelection;
   int trackSelection = -1;
 
-  std::vector<double> jetPtBins;
+  std::vector<double> dijetMassBins;
 
   void init(o2::framework::InitContext&)
   {
-    eventSelection = jetderiveddatautilities::initialiseEventSelection(static_cast<std::string>(eventSelections));
+    eventSelection = jetderiveddatautilities::initialiseEventSelectionBits(static_cast<std::string>(eventSelections));
     trackSelection = jetderiveddatautilities::initialiseTrackSelection(static_cast<std::string>(trackSelections));
 
-    auto jetPtTemp = 5.0;
-    jetPtBins.push_back(jetPtTemp);
-    while (jetPtTemp < jetPtMax) {
-      if (jetPtTemp < 85) {
-        jetPtTemp += 10.0;
-        jetPtBins.push_back(jetPtTemp);
-      } else if (jetPtTemp < 130.0) {
-        jetPtTemp += 15.0;
-        jetPtBins.push_back(jetPtTemp);
-      } else {
-        jetPtTemp += 20.0;
-        jetPtBins.push_back(jetPtTemp);
-      }
+    auto dijetMassTemp = 0.0;
+    while (dijetMassTemp <= 2 * jetPtMax) {
+      dijetMassBins.push_back(dijetMassTemp);
+      dijetMassTemp += 5.0;
     }
 
-    AxisSpec jetPtAxis = {jetPtBins, "M_{jj} (GeV/#it{c}^2)"};
+    AxisSpec dijetMassAxis = {dijetMassBins, "M_{jj} (GeV/#it{c}^2)"};
+    
+    AxisSpec eventCountAxis = {{0.5, 1.5}, "Events"};
+
+    
 
     if (doprocessDijetMCP) {
-      registry.add("h_part_jet_pt", "Jet pt MCP;;entries", {HistType::kTH1F, {jetPtAxis}});
-      registry.add("h_part_dijet_mass", "Dijet invariant mass;;entries", {HistType::kTH1F, {jetPtAxis}});
+      registry.add("h_part_dijet_mass", "Dijet invariant mass;;entries", {HistType::kTH1F, {dijetMassAxis}});
+      registry.add("h_nEvents_MCP", "Number of processed MCP events;;Entries", {HistType::kTH1F, {eventCountAxis}});
     }
 
     if (doprocessDijetMCD) {
-      registry.add("h_detec_jet_pt", "Jet pt MCD;;entries", {HistType::kTH1F, {jetPtAxis}});
-      registry.add("h_detec_dijet_mass", "Dijet invariant mass;;entries", {HistType::kTH1F, {jetPtAxis}});
+      registry.add("h_detec_dijet_mass", "Dijet invariant mass;;entries", {HistType::kTH1F, {dijetMassAxis}});
+      registry.add("h_nEvents_MCD", "Number of processed MCD events;;Entries", {HistType::kTH1F, {eventCountAxis}});
+      
     }
-
+    
     if (doprocessDijetData) {
-      registry.add("h_data_jet_pt", "Jet pt Data;;entries", {HistType::kTH1F, {jetPtAxis}});
-      registry.add("h_data_dijet_mass", "Dijet invariant mass;;entries", {HistType::kTH1F, {jetPtAxis}});
+      registry.add("h_data_dijet_mass", "Dijet invariant mass;;entries", {HistType::kTH1F, {dijetMassAxis}});
+      registry.add("h_nEvents_Data", "Number of processed Data events;;Entries", {HistType::kTH1F, {eventCountAxis}});
     }
 
     if (doprocessDijetMCMatched) {
-      registry.add("h_matched_dijet_mass", "M_{jj matched};M_{jj part}; M_{jj det}", {HistType::kTH2F, {jetPtAxis, jetPtAxis}});
+      registry.add("h_matched_dijet_mass", "M_{jj matched};M_{jj part}; M_{jj det}", {HistType::kTH2F, {dijetMassAxis, dijetMassAxis}});
     }
   }
 
@@ -121,8 +115,7 @@ struct DijetFinderQATask {
   Filter trackCuts = (aod::jtrack::pt >= trackPtMin && aod::jtrack::pt < trackPtMax && aod::jtrack::eta > trackEtaMin && aod::jtrack::eta < trackEtaMax);
   Filter eventCuts = (nabs(aod::jcollision::posZ) < vertexZCut && aod::jcollision::centrality >= centralityMin && aod::jcollision::centrality < centralityMax);
   Filter mcCollisionsFilter = nabs(aod::jmccollision::posZ) < vertexZCut;
-  Filter jetCuts = aod::jet::pt > jetPtMin&& aod::jet::r == nround(jetR.node() * 100.0f); // **********
-  PresliceUnsorted<soa::Filtered<aod::JetCollisionsMCD>> CollisionsPerMCPCollision = aod::jmccollisionlb::mcCollisionId;
+  Filter jetCuts = aod::jet::pt > jetPtMin&& aod::jet::r == nround(jetR.node() * 100.0f);
   /****************************************************************************************************************************************************************/
 
   template <typename T, typename U>
@@ -162,30 +155,6 @@ struct DijetFinderQATask {
   }
 
   template <typename T>
-  void fillJetPtHistogramsMCP(T const& jet)
-  {
-    if (jet.r() == round(selectedJetsRadius * 100.0f)) {
-      registry.fill(HIST("h_part_jet_pt"), jet.pt());
-    }
-  }
-
-  template <typename T>
-  void fillJetPtHistogramsMCD(T const& jet)
-  {
-    if (jet.r() == round(selectedJetsRadius * 100.0f)) {
-      registry.fill(HIST("h_detec_jet_pt"), jet.pt());
-    }
-  }
-
-  template <typename T>
-  void fillJetPtHistogramsData(T const& jet)
-  {
-    if (jet.r() == round(selectedJetsRadius * 100.0f)) {
-      registry.fill(HIST("h_data_jet_pt"), jet.pt());
-    }
-  }
-
-  template <typename T>
   void fillMassHistogramsMCP(T const& mass)
   {
     registry.fill(HIST("h_part_dijet_mass"), mass);
@@ -216,9 +185,10 @@ struct DijetFinderQATask {
 
   void processDijetMCP(soa::Filtered<aod::JetMcCollisions>::iterator const&, soa::Filtered<aod::ChargedMCParticleLevelJets> const& jets)
   {
+    registry.fill(HIST("h_nEvents_MCP"), 1.0f);
+
     std::vector<std::array<double, 3>> jetPtcuts;
     for (auto& jet : jets) {
-      fillJetPtHistogramsMCP(jet);
       jetPtcuts.push_back({jet.pt(), jet.eta(), jet.phi()});
     }
 
@@ -232,7 +202,7 @@ struct DijetFinderQATask {
         Double_t deta = fabs(leading_jet[1] - candidate_jet[1]);
         Double_t condition = fabs(dphi - M_PI);
 
-        if (condition < phicut * M_PI) {
+        if (condition < setPhiCut * M_PI) {
           Double_t pt1 = leading_jet[0];
           Double_t pt2 = candidate_jet[0];
           Double_t dijet_mass = sqrt(2 * pt1 * pt2 * (cosh(deta) - cos(dphi)));
@@ -249,9 +219,10 @@ struct DijetFinderQATask {
     if (!jetderiveddatautilities::selectCollision(collision, eventSelection)) {
       return;
     }
+    registry.fill(HIST("h_nEvents_MCD"), 1.0f);
+
     std::vector<std::array<double, 3>> jetPtcuts;
     for (auto& jet : jets) {
-      fillJetPtHistogramsMCD(jet);
       jetPtcuts.push_back({jet.pt(), jet.eta(), jet.phi()});
     }
 
@@ -265,7 +236,7 @@ struct DijetFinderQATask {
         Double_t deta = fabs(leading_jet[1] - candidate_jet[1]);
         Double_t condition = fabs(dphi - M_PI);
 
-        if (condition < phicut * M_PI) {
+        if (condition < setPhiCut * M_PI) {
           Double_t pt1 = leading_jet[0];
           Double_t pt2 = candidate_jet[0];
           Double_t dijet_mass = sqrt(2 * pt1 * pt2 * (cosh(deta) - cos(dphi)));
@@ -283,9 +254,10 @@ struct DijetFinderQATask {
       return;
     }
 
+    registry.fill(HIST("h_nEvents_Data"), 1.0f);
+
     std::vector<std::array<double, 3>> jetPtcuts;
     for (auto& jet : jets) {
-      fillJetPtHistogramsData(jet);
       jetPtcuts.push_back({jet.pt(), jet.eta(), jet.phi()});
     }
 
@@ -299,7 +271,7 @@ struct DijetFinderQATask {
         Double_t deta = fabs(leading_jet[1] - candidate_jet[1]);
         Double_t condition = fabs(dphi - M_PI);
 
-        if (condition < phicut * M_PI) {
+        if (condition < setPhiCut * M_PI) {
           Double_t pt1 = leading_jet[0];
           Double_t pt2 = candidate_jet[0];
           Double_t dijet_mass = sqrt(2 * pt1 * pt2 * (cosh(deta) - cos(dphi)));
@@ -347,10 +319,10 @@ struct DijetFinderQATask {
         Double_t dphi_D = fabs(leading_jet_D[2] - candidate_jet_D[2]);
         Double_t deta_D = fabs(leading_jet_D[1] - candidate_jet_D[1]);
         Double_t dphi_P = fabs(leading_jet_P[2] - candidate_jet_P[2]);
-        Double_t deta_P = fabs(leading_jet_P[1] - candidate_jet_p[1]);
+        Double_t deta_P = fabs(leading_jet_P[1] - candidate_jet_P[1]);
         Double_t condition = fabs(dphi_D - M_PI);
 
-        if (condition < phicut * M_PI) {
+        if (condition < setPhiCut * M_PI) {
           double pt1_D = leading_jet_D[0];
           double pt2_D = candidate_jet_D[0];
           double dijet_mass_D = sqrt(2 * pt1_D * pt2_D * (cosh(deta_D) - cos(dphi_D)));

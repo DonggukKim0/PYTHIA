@@ -14,8 +14,8 @@
     "internal-dpl-aod-index-builder": "",
     "timestamp-task": "",
     "tracks-extra-v002-converter": {
-        "processV000ToV002": "true",
-        "processV001ToV002": "false"
+        "processV000ToV002": "false",
+        "processV001ToV002": "true"
     },
     "bc-selection-task": {
         "triggerBcShift": "999",
@@ -191,6 +191,7 @@
     },
     "dijet-finder-charged-qa": {
         "setJetPtCut": "20",
+        "phicut": "0.5",
         "selectedJetsRadius": "0.400000006",
         "eventSelections": "sel8",
         "vertexZCut": "10",

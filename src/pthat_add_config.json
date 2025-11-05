@@ -1,0 +1,114 @@
+{
+  "pthat_bins": [
+    {
+      "name": "pthat_5_11",
+      "range": {
+        "min": 5,
+        "max": 11
+      },
+      "file": "pthat_5_11_merged.root",
+      "include": true,
+      "use_scale_factor": true,
+      "scale_factor": 6.556e+01
+    },
+    {
+      "name": "pthat_11_21",
+      "range": {
+        "min": 11,
+        "max": 21
+      },
+      "file": "pthat_11_21_merged.root",
+      "include": true,
+      "use_scale_factor": true,
+      "scale_factor": 5.766e+00
+    },
+    {
+      "name": "pthat_21_36",
+      "range": {
+        "min": 21,
+        "max": 36
+      },
+      "file": "pthat_21_36_merged.root",
+      "include": true,
+      "use_scale_factor": true,
+      "scale_factor": 6.270e-01
+    },
+    {
+      "name": "pthat_36_57",
+      "range": {
+        "min": 36,
+        "max": 57
+      },
+      "file": "pthat_36_57_merged.root",
+      "include": true,
+      "use_scale_factor": true,
+      "scale_factor": 7.568e-02
+    },
+    {
+      "name": "pthat_57_84",
+      "range": {
+        "min": 57,
+        "max": 84
+      },
+      "file": "pthat_57_84_merged.root",
+      "include": true,
+      "use_scale_factor": true,
+      "scale_factor": 1.128e-02
+    },
+    {
+      "name": "pthat_84_117",
+      "range": {
+        "min": 84,
+        "max": 117
+      },
+      "file": "pthat_84_117_merged.root",
+      "include": true,
+      "use_scale_factor": true,
+      "scale_factor": 2.092e-03
+    },
+    {
+      "name": "pthat_117_152",
+      "range": {
+        "min": 117,
+        "max": 152
+      },
+      "file": "pthat_117_152_merged.root",
+      "include": true,
+      "use_scale_factor": true,
+      "scale_factor": 4.820e-04
+    },
+    {
+      "name": "pthat_152_191",
+      "range": {
+        "min": 152,
+        "max": 191
+      },
+      "file": "pthat_152_191_merged.root",
+      "include": true,
+      "use_scale_factor": true,
+      "scale_factor": 1.545e-04
+    },
+    {
+      "name": "pthat_191_234",
+      "range": {
+        "min": 191,
+        "max": 234
+      },
+      "file": "pthat_191_234_merged.root",
+      "include": true,
+      "use_scale_factor": true,
+      "scale_factor": 4.966e-05
+    },
+    {
+      "name": "pthat_234_infy",
+      "range": {
+        "min": 234,
+        "max": null
+      },
+      "file": "pthat_234_infy_merged.root",
+      "include": true,
+      "use_scale_factor": true,
+      "scale_factor": 2.869e-05
+    }
+  ]
+}

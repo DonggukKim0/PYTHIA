@@ -1,0 +1,18 @@
+{
+  "default_config": "default_pythia_config_pp_5020GeV.cmnd",
+  "output_dir": "../config_files_pp_5020GeV_PromptPhoton_all_on",
+  "precision": 2,
+  "seed": 123,
+  "pthats_events": [
+    [5, 11, 100],
+    [11, 21, 100],
+    [21, 36, 100],
+    [36, 57, 100],
+    [57, 84, 100],
+    [84, 117, 100],
+    [117, 152, 100],
+    [152, 191, 100],
+    [191, 234, 100],
+    [234, -1, 100]
+  ]
+}
